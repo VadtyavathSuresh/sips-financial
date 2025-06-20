@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>vss Login</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+   *{  
+    font-family:sans-serif;
+     
+}
+
+    :root {
+      --primary-color: #0875e1;
+      --secondary-color: #f8faff;
+      --accent-color: #24b4e4;
+      --text-dark: #2a2a2a;
+      --text-light: #5f6f81;
+      --success-color: #27ae60;
+      --danger-color: #e74c3c;
+      --highlight-color: #f1c40f;
+    }
+
+    body {
+      background-color: var(--accent-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .forms-section {
+      width: 90%;
+      max-width: 600px;
+      background-color: var(--secondary-color);
+      border-radius: 10px;
+      padding: 2rem;
+      box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 1.8rem;
+      color: var(--primary-color);
+      margin-bottom: 1.5rem;
+    }
+
+    .form-wrapper {
+      display: none;
+    }
+
+    .form-wrapper.is-active {
+      display: block;
+    }
+
+    .switcher {
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: 500;
+      color: var(--text-light);
+      border: none;
+      background-color: transparent;
+      cursor: pointer;
+      margin-bottom: 1rem;
+    }
+
+    .switcher.is-active {
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+
+    .input-block {
+      margin-bottom: 1.5rem;
+    }
+
+    .input-block label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+      color: var(--text-light);
+    }
+
+    .btn-eye {
+      position: absolute;
+      right: 10px;
+      top: 70%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 1.2em;
+    }
+
+    .btn-eye:focus {
+      outline: none;
+    }
+
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    input[type="number"] {
+      -moz-appearance: textfield;
+    }
+   
+  </style>
+</head>
+
+<body>
+  <section class="forms-section">
+    <div class="form-wrapper is-active" id="login-form">
+      <h1 class="section-title">Vss Login</h1>
+      <form id="login-form" onsubmit="confirmAction('login', event)">
+        <div class="input-block">
+          <label for="login-username">Username</label>
+          <input id="login-username" type="text" class="form-control" placeholder="Enter your username" required>
+        </div>
+        <div class="input-block position-relative">
+          <label for="login-password">Password</label>
+          <input id="login-password" type="password" class="form-control" placeholder="Enter your password" required>
+          <button type="button" class="btn-eye" onclick="togglePasswordVisibility('login-password')">
+            👁
+          </button>
+        </div>
+        <button type="submit" class="btn btn-success w-100">Login</button>
+      </form>
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <p class="mb-0">New account? 
+            <span class="switcher switcher-login fw-bold text-primary" style="font-size: 1rem;" data-target="signup">SignUp</span>
+        </p>
+        <a href="/ForgetPasswordPage" class="text-decoration-none" style="color: var(--danger-color);">Forgot Password?</a>
+    </div>
+    
+    </div>
+
+    <div class="form-wrapper" id="signup-form">
+      <h1 class="section-title">SiPS Finance SignUp</h1>
+      <form id="signup-form" onsubmit="confirmAction('signup', event)">
+        <div class="input-block">
+          <label for="signup-username">Username </label>
+          <input id="signup-username" type="text" name="SUserName" class="form-control" placeholder="Enter your username" required>
+          <p id="Name" style="color:#e63946;font-size:2vh;padding-top: 0.5vh;"></p>
+        </div>
+        <div class="input-block">
+          <label for="signup-email">Email</label>
+          <input id="signup-email" type="email" name="Email" class="form-control" placeholder="Enter your email" required>
+          <p id="email-error" style="color:#e63946"></p>
+          <button type="button" class="btn btn-primary mt-2" onclick="sendOtp()">Send OTP</button>
+          <p id="email-otp-status" style="color:#e63946;font-size:2vh;padding-top: 0.5vh;"></p>
+        </div>
+        <div class="input-block" id="otp-section" style="display: none;">
+          <label for="signup-email-otp">Enter OTP</label>
+          <input id="signup-email-otp" type="text" class="form-control" placeholder="Enter OTP" required>
+          <button type="button" class="btn btn-success mt-2" onclick="verifyOtp()">Verify OTP</button>
+          <p id="otp-status" style="color:#e63946;font-size:2vh;padding-top: 0.5vh;"></p>
+        </div>
+        <div class="input-block position-relative">
+          <label for="signup-password">Password</label>
+          <input id="signup-password" type="password" name="SPassword" class="form-control" placeholder="Enter your password" required>
+          <button type="button" class="btn-eye" onclick="togglePasswordVisibility('signup-password')">👁</button>
+        </div>
+        <div class="input-block position-relative">
+          <label for="signup-password-confirm">Confirm Password</label>
+          <input id="signup-password-confirm" type="password" class="form-control" placeholder="Confirm your password" required>
+          <button type="button" class="btn-eye" onclick="togglePasswordVisibility('signup-password-confirm')">👁</button>
+</div>
+  
+            <button id="signup-button" class="btn btn-success w-100" disabled>Sign Up</button>
+          </div>
+      </form>
+      <div class="text-center mt-3">
+        <p class="mb-0">Already have an account? 
+          <span class=" switcher switcher-login fw-bold text-primary" style="font-size: 1rem;" data-target="login">Login here</span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <script>
+let Otp=0;
+    async function sendOtp() {
+       Otp = Math.floor(100000 + Math.random() * 900000);
+      const email = document.getElementById('signup-email').value;
+      if (!email) {
+        document.getElementById('email-otp-status').innerText = 'Please enter a valid email.';
+        return;
+      }
+
+      try {
+        const response = await fetch(`/sendOtp?Email=${email}&Otp=Your OTP to SignUp in SiPS is ${Otp}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email })
+        });
+
+        if (response.ok) {
+          document.getElementById('email-otp-status').innerHTML = '<p style="color:green">OTP sent to your email.</p';
+          document.getElementById('otp-section').style.display = 'block';
+        } else {
+          document.getElementById('email-otp-status').innerText = 'Failed to send OTP. Please try again.';
+        }
+      } catch (error) {
+        console.error(error);
+        document.getElementById('email-otp-status').innerText = 'Error sending OTP.';
+      }
+    }
+
+    function verifyOtp() {
+      const enteredOtp = document.getElementById('signup-email-otp').value;
+      if (enteredOtp == Otp) {
+        document.getElementById('otp-status').innerText = 'Email verified successfully!';
+        document.getElementById('otp-status').style.color = 'green'
+        document.getElementById("signup-button").disabled = false;
+      } else {
+        document.getElementById('otp-status').innerText = 'Invalid OTP. Please try again.';
+        document.getElementById('otp-status').style.color = 'red';
+      }
+    }
+  </script>
+<script>
+  const switchers = document.querySelectorAll('.switcher');
+  const forms = document.querySelectorAll('.form-wrapper');
+
+  switchers.forEach(switcher => {
+    switcher.addEventListener('click', () => {
+      switchers.forEach(sw => sw.classList.remove('is-active'));
+      forms.forEach(form => form.classList.remove('is-active'));
+
+      const target = switcher.getAttribute('data-target');
+      switcher.classList.add('is-active');
+      document.getElementById(`${target}-form`).classList.add('is-active');
+    });
+  });
+
+  async function confirmAction(action, event) {
+    event.preventDefault(); // Prevent form submission
+
+    try {
+      // Fetch user data
+      const response = await fetch('/UserData');
+      if (!response.ok) throw new Error('Failed to fetch user data');
+      const users = await response.json();
+
+      if (action === 'signup') {
+        const password = document.getElementById('signup-password').value;
+        const confirmPassword = document.getElementById('signup-password-confirm').value;
+        const username = document.getElementById('signup-username').value;
+        const email = document.getElementById('signup-email').value;
+
+        // Check if username already exists
+        if (users.some(user => user.UserName === username)) {
+          alert('Username already exists. Please choose a different name.');
+          return;
+        }
+        // Check if passwords match
+        if (password !== confirmPassword) {
+          alert('Passwords do not match. Please try again.');
+          return;
+        }
+
+        // Redirect with query parameters
+        window.location.href = `/signup?Password=${encodeURIComponent(password)}&UserName=${encodeURIComponent(username)}&Email=${encodeURIComponent(email)}`;
+        alert("Thank you for Signing up! You can now Log In with your credentials");
+      }
+
+      if (action === 'login') {
+        const username = document.getElementById('login-username').value;
+        const password = document.getElementById('login-password').value;
+        window.location.href = `/check/?username=${username}&password=${password}`;
+        
+      }
+    } catch (error) {
+      console.error('Error:', error.message);
+      alert('An error occurred. Please try again later.');
+    }
+  }
+
+  document.getElementById('signup-username').addEventListener('input', function (e) {
+    const value = e.target.value;
+    if (value.length > 25) {
+      e.target.value = value.slice(0, -1); // Restrict input to 25 digits
+    }
+  });
+  document.getElementById('signup-password').addEventListener('input', function (e) {
+    const value = e.target.value;
+    if (value.length > 25) {
+      e.target.value = value.slice(0, -1); // Restrict input to 25 digits
+    }
+  });
+  document.getElementById('signup-password-confirm').addEventListener('input', function (e) {
+    const value = e.target.value;
+    if (value.length > 25) {
+      e.target.value = value.slice(0, -1); // Restrict input to 25 digits
+    }
+  });
+  function togglePasswordVisibility(inputId) {
+    const inputField = document.getElementById(inputId);
+    const eyeButton = inputField.nextElementSibling; // Assuming the button is the next sibling
+    if (inputField.type === "password") {
+      inputField.type = "text";
+      eyeButton.textContent = "🙈"; // Change icon to hide
+    } else {
+      inputField.type = "password";
+      eyeButton.textContent = "👁"; // Change icon to show
+    }
+  }
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+let allApplicants = [];
+
+async function fetchAllApplicants() {
+
+  try {
+    const response = await fetch('/UserData');
+    if (!response.ok) throw new Error('Failed to fetch applicants');
+    allApplicants = await response.json();
+  } catch (error) {
+    console.error('Error fetching applicants:', error);
+  }
+}
+
+async function checkApplicantName() {
+  const applicantNameInput = document.getElementById('signup-username');
+  const applicantName = applicantNameInput.value;
+  if (applicantName) {
+    const exists = allApplicants.some(applicant => applicant.UserName === applicantName);
+  
+    if (exists) {
+      document.getElementById('Name').innerHTML = "UserName already exists. Please choose a different name.";
+      applicantNameInput.setCustomValidity('Applicant Name already exists.');
+   
+    } else {
+      applicantNameInput.setCustomValidity('');
+      document.getElementById('Name').innerHTML = "";
+    }
+  }
+}
+
+async function checkApplicantEmail() {
+  const applicantEmailInput = document.getElementById('signup-email');
+  const applicantEmail = applicantEmailInput.value;
+  if (applicantEmail) {
+    const exists = allApplicants.some(applicant => applicant.Email === applicantEmail);
+  
+    if (exists) {
+      document.getElementById('email-error').innerHTML = "Email ID already exists. Please choose a different name.";
+      applicantEmailInput.setCustomValidity('Applicant Name already exists.');
+   
+    } else {
+      applicantEmailInput.setCustomValidity('');
+      document.getElementById('email-error').innerHTML = "";
+    }
+  }
+}
+
+window.addEventListener("load", fetchAllApplicants);
+document.getElementById('signup-username').addEventListener('input', checkApplicantName);
+document.getElementById('signup-email').addEventListener('input', checkApplicantEmail);
+});
+
+</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,8 @@
+CREATE TABLE Users (
+    UserName VARCHAR(20) PRIMARY KEY,
+    Password VARCHAR(220),
+    Email VARCHAR(50),
+    PhoneNumber VARCHAR(20),
+    Access INT
+);
+select*from users;
